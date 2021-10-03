@@ -1,0 +1,11 @@
+Flask==1.1.2
+moviepy
+imageio==2.4.1
+ffmpeg-python
+fer
+torch
+transformers==2.11.0
+attrdict==2.0.1
+tensorflow
+tensorflow_hub
+numpy
