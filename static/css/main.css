@@ -1,7 +1,9 @@
-body, html {
+body,
+html {
     margin: 0;
     font-family: sans-serif;
-    background-image: url("VOIS_logo.jpg") ;
+    background-image: url("VOIS_logo.jpg");
+    color: white;
 }
 
 .content {
@@ -9,7 +11,9 @@ body, html {
     width: 400px;
 }
 
-table, td, th {
+table,
+td,
+th {
     border: 1px solid #aaa;
 }
 

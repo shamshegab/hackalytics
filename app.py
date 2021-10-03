@@ -14,7 +14,7 @@ from fer import Video
 
 
 app = Flask(__name__)
-#model = load_model()
+text2emotion = load_model()
 
 module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
 model = hub.load(module_url)
@@ -34,9 +34,9 @@ def index():
             
 
 			##convert video to audio  --Yara
-			VideoToAudio(video,"C:\\Users\\Aboelezzm\\Downloads\\FlaskIntroduction-master-working-Copy\\michael2.mp3")
+			VideoToAudio(video,"michael2.mp3")
 			##call speech to text  --Yara
-			operation = AudioToText("C:\\Users\\Aboelezzm\\Downloads\\FlaskIntroduction-master-working-Copy\\michael2.mp3")
+			operation = AudioToText("michael2.mp3")
 
 			##transform text to get transcript 
 			recognized_text = ''
@@ -45,9 +45,9 @@ def index():
 			print(recognized_text)
 
 			##detect transcript to emotions  --Shams
-			#result = model(recognized_text)
-			#emotion_str = str(result)
-			#print(emotion_str)
+			result = text2emotion(recognized_text)
+			emotion_str = str(result)
+			print(emotion_str)
 
 
 			##call semantic analysis code --Abbas
@@ -95,7 +95,7 @@ def FacialEmotionDetection(videoName):
 
 
 def AudioToText (VideoPath):
-	os.environ['GOOGLE_APPLICATION_CREDENTIALS']='C:\\Users\\Aboelezzm\\Downloads\\FlaskIntroduction-master-working-Copy\\speech_to_text_credentials.json'
+	os.environ['GOOGLE_APPLICATION_CREDENTIALS']='speech_to_text_credentials.json'
 	speech_client = speech.SpeechClient()
 	media_file_name_mp3 = VideoPath
 	with open(media_file_name_mp3, 'rb') as f1:
