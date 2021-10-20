@@ -29,10 +29,13 @@ def index():
 		email = request.form['email']
 
 		if not video:
-			flash('please select a video first')
+			flash('please upload your answer first')
+		if not video2:
+			flash('please upload your answer first')
 		else:
 			#store video to GCS --------------
-			store_in_gcs(video,"".join(("applicants_videos/",email)))
+			video_list = [video,video2]
+			store_in_gcs(video_list,email)
 
 			##call emotion detection code --Mahmoud
 			#FER = FacialEmotionDetection(video)
@@ -132,15 +135,20 @@ def sentence_similarity(answers):
 	return similarity[0][1]
 
 #get GCS bucket object ---------------------------------------------
-def store_in_gcs(file,gcs_destination):
+def store_in_gcs(video_list,applicant_mail):
 	# Setting credentials using the downloaded JSON file
 	client = storage.Client.from_service_account_json(json_credentials_path='speech_to_text_credentials.json')
 	# Creating bucket object
 	bucket = client.get_bucket('hackalytics')
-	# Name of the object to be stored in the bucket
-	object_name_in_gcs_bucket = bucket.blob(gcs_destination)
-	# Name of the object in local file system
-	object_name_in_gcs_bucket.upload_from_filename(file)
+	i=1
+	#upload videos in GCS bucket
+	for video in video_list:
+		# Name of the destination file in the bucket
+		gcs_file_name = "".join(("applicants_videos/",applicant_mail,"/Q",str(i)))
+		print(gcs_file_name)
+		object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
+		object_name_in_gcs_bucket.upload_from_filename(video)
+		i += 1
 
 if __name__ == "__main__":
 	app.run(debug=True)
