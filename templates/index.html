@@ -1,18 +1,44 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+		<title>Application Page</title>
+	</head>
 
-{% block head %}
-<title>Application Form</title>
-{% endblock %}
+	<body>
+		<h1 style="text-align: center">Application Form</h1>
+		<div id="formContainer">
+			<form id="formC" action="/" method="POST">
+				<div id="personal_info">
+					<div class="column">
+					    <label class="theLabels" for="name"><b>Name</b></label>
+					    <input class="theInputs" type="text" placeholder="please enter your name" id="name" name="name" class="form-control" value="{{ request.form['name'] }}" required>
+					</div>
+					<div class="column">
+					    <label class="theLabels" for="email"><b>Email</b></label>
+					    <input class="theInputs" type="text" placeholder="please enter your mail" id="email" name="email" class="form-control" value="{{ request.form['email'] }}" required>
+					</div>
+				</div>
 
-{% block body %}
-<div class="content">
-    <h1 style="text-align: center">Application Form</h1>
-    <div class="form">
-        <form action="/" method="POST" >
-            <label for="img">Upload Your Video:</label>
-            <input type="file" id="video" name="video" accept="video/*" class="form-control" value="{{ request.form['video'] }}">
-            <button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-</div>
-{% endblock %}
+				<div id="questions_form">
+					<p style="font-family: Serif;font-size: 20px;font-style: italic;">Please read the following questions carefully and submit your answers</p>
+				  	<div class="column">
+				  		<label class="questions" for="vid">Q1: what is the difference between DWH and ODS?</label>
+				      	<input class="vid-btn" type="file" placeholder="please upload your video" id="video" name="video" accept="video/*" class="form-control" value="{{ request.form['video'] }}">
+					 </div>
+					 <div class="column">
+					 	<label class="questions" for="vid">Q2: what is Hadoop eco system?</label>
+				      	<input class="vid-btn" type="file" placeholder="please upload your video" id="video2" name="video2" accept="video/*" class="form-control" value="{{ request.form['video2'] }}">
+					</div>
+				</div>
+
+				<button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
+
+			</form>
+		</div>
+	</body>
+</html>
+
