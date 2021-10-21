@@ -11,7 +11,7 @@ import imageio
 #from fer import FER
 #from fer import Video
 from google.cloud import storage
-
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -35,13 +35,14 @@ def index():
 		else:
 			#store video to GCS
 			video_list = [video,video2]
+			create_output_file()
 			question_num=1
 			for video in video_list:
 				upload_video_to_gcs(video,email,question_num)
 				##call emotion detection code --Mahmoud
 				#FER = FacialEmotionDetection(video)
 				#print(FER)
-				video_emotions ={"ve_happy":1 , "ve_sad":1 }
+				video_emotions = ( 1 , 2 )
 
 				#get transript from the video
 				recognized_text = get_transcript(video)
@@ -51,7 +52,7 @@ def index():
 				#result = text2emotion(recognized_text)
 				#emotion_str = str(result)
 				#print(emotion_str)
-				text_emotions = {"te_Neutral":1 , "te_admiration":1 }
+				text_emotions = ( 3 , 4 )
 
 				##call semantic analysis code --Abbas
 				#ans = {
@@ -60,18 +61,42 @@ def index():
 				#}
 				#rate = sentence_similarity(ans)
 				#print(rate)
-				#similarity = {"similarity" : rate}
+				rate =  0.9
 
-				##store results to GCS
-
+				append_to_output_file(email,name,question_num,rate,video_emotions,text_emotions)
 				question_num += 1
 
+			##upload results to GCS
+			upload_result_to_gcs(email)
 			return redirect(url_for('response'))
 	return render_template('index.html')
 
 @app.route('/review_response')
 def response():
 	return render_template('review_response.html')
+
+def create_output_file():
+	file_header = "date,email,name,question_number,ve_happy,ve_sad,te_neutral,te_admiration"
+	#create file and write header to it
+	f = open("candidate_analysis.csv", "w")
+	f.write("".join((file_header,"\n")) )
+	f.close()
+	return 1
+
+def append_to_output_file(email,name,question_num,rate,video_emotions,text_emotions):
+	f = open("candidate_analysis.csv", "a")
+	now = datetime.now()
+	date = now.strftime("%d/%m/%Y %H:%M:%S")
+	question_num_str = str(question_num)
+	rate_str = str(rate)
+	video_emotions_str = str(video_emotions)
+	video_emotions_str = video_emotions_str.strip("()")
+	text_emotions_str = str(text_emotions)
+	text_emotions_str = text_emotions_str.strip("()")
+	record = "".join((date , "," , email , "," , name , "," , question_num_str , "," , rate_str , "," , video_emotions_str , "," , text_emotions_str,"\n" ))
+	f.write(record)
+	f.close()
+	return 1
 
 #get GCS bucket object 
 def upload_video_to_gcs(video,applicant_mail,question_num):
@@ -80,10 +105,25 @@ def upload_video_to_gcs(video,applicant_mail,question_num):
 	# Creating bucket object
 	bucket = client.get_bucket('hackalytics')
 	# Name of the destination file in the bucket
-	gcs_file_name = "".join(("applicants_videos/",applicant_mail,"/Q",str(question_num)))
+	gcs_file_name = "".join(("applicants/",applicant_mail,"/Q",str(question_num)))
 	print(gcs_file_name)
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename(video)
+	return 1
+
+
+#get GCS bucket object 
+def upload_result_to_gcs(applicant_mail):
+	# Setting credentials using the downloaded JSON file
+	client = storage.Client.from_service_account_json(json_credentials_path='speech_to_text_credentials.json')
+	# Creating bucket object
+	bucket = client.get_bucket('hackalytics')
+	# Name of the destination file in the bucket
+	gcs_file_name = "".join(("applicants/",applicant_mail,"/candidate_analysis.csv"))
+	print(gcs_file_name)
+	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
+	object_name_in_gcs_bucket.upload_from_filename("candidate_analysis.csv")
+	return 1
 		
 
 #get transript from the video
