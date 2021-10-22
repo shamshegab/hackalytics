@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-#text2emotion = load_model()
+text2emotion = load_model()
 
 module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
 #model = hub.load(module_url)
@@ -42,17 +42,22 @@ def index():
 				##call emotion detection code --Mahmoud
 				#FER = FacialEmotionDetection(video)
 				#print(FER)
-				video_emotions = ( 1 , 2 )
+				video_emotions = ( 1 , 2, 0,0,0,0,0 )
 
 				#get transript from the video
 				recognized_text = get_transcript(video)
 				
 
 				##detect transcript to emotions  --Shams
-				#result = text2emotion(recognized_text)
-				#emotion_str = str(result)
-				#print(emotion_str)
-				text_emotions = ( 3 , 4 )
+				result = text2emotion(recognized_text)
+				emotion_str = str(result)
+				print(emotion_str)
+				emotions_array=np.zeros(28)
+				for i in range(len(result[0]['labels'])):
+    				
+        				emotions_array[labels_t2e.get(result[0]['labels'][i])] = result[0]['scores'][i]
+				text_emotions= tuple(emotions_array)
+				print(text_emotions)
 
 				##call semantic analysis code --Abbas
 				#ans = {
@@ -191,6 +196,63 @@ def sentence_similarity(answers):
 	similarity = np.inner(embeddings, embeddings)
 	return similarity[0][1]
 
+
+labels_t2e = {
+	'neutral': 0,
+    'admiration': 1,
+    'amusement':2,
+		 'anger':        
+             3 ,
+		 'annoyance':        
+             4 ,
+		 'approval':        
+             5 ,
+		 'caring':        
+             6 ,
+		 'confusion':        
+             7 ,
+		 'curiosity':        
+             8 ,
+		 'desire':        
+             9 ,
+		 'dissappointment':        
+             10 ,
+		 'disapproval':        
+             11 ,
+		 'disgust':        
+             12 ,
+		 'embarrassment':        
+             13 ,
+		 'excitement':        
+             14 ,
+		 'fear':        
+             15 ,
+		 'gratitude':        
+             16 ,
+		 'grief':        
+             17 ,
+		 'joy':        
+             18 ,
+		 'love':        
+             19 ,
+		 'nervousness':        
+             20 ,
+		 'optimism':        
+             21 ,
+		 'pride':        
+             22 ,
+		 'realization':        
+             23 ,
+		 'relief':        
+             24 ,
+		 'remorse':        
+             25 ,
+		 'sadness':        
+             26 ,
+		 'surprise':        
+             27 
+}
+			
 
 if __name__ == "__main__":
 	app.run(debug=True)
