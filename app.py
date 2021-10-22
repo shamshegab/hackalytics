@@ -105,7 +105,7 @@ def upload_video_to_gcs(video,applicant_mail,question_num):
 	# Creating bucket object
 	bucket = client.get_bucket('hackalytics2')
 	# Name of the destination file in the bucket
-	gcs_file_name = "".join(("applicants/",applicant_mail,"/Q",str(question_num)))
+	gcs_file_name = "".join(("applicants/videos/",applicant_mail,"_Q",str(question_num)))
 	print(gcs_file_name)
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename(video)
