@@ -119,7 +119,7 @@ def upload_result_to_gcs(applicant_mail):
 	# Creating bucket object
 	bucket = client.get_bucket('hackalytics2')
 	# Name of the destination file in the bucket
-	gcs_file_name = "".join(("applicants/",applicant_mail,"/candidate_analysis.csv"))
+	gcs_file_name = "".join(("applicants/",applicant_mail,"_candidate_analysis.csv"))
 	print(gcs_file_name)
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename("candidate_analysis.csv")
