@@ -43,7 +43,7 @@ def index():
 			for i in range(len(video_list)):
 				upload_video_to_gcs(video_list[i],email,question_num)
 				##call emotion detection code --Mahmoud
-				#FER = FacialEmotionDetection(video)
+				FER = FacialEmotionDetection(video)
 				#print(FER)
 				video_emotions = ( 1 , 2, 0,0,0,0,0 )
 
@@ -184,12 +184,12 @@ def FacialEmotionDetection(videoName):
     df = video.to_pandas(raw_data)
     df = video.get_first_face(df)
     df = video.get_emotions(df)
-    Dict = {}
+    Tup = []
     for i in df:
-        Dict[i] = (df[i].mean(axis=0))
+        Tup.append(df[i].mean(axis=0))
 # Plot emotions
 #   fig = df.plot(figsize=(20, 16), fontsize=26).get_figure()
-    return Dict
+    return tuple(Tup)
 
 
 def sentence_similarity(answers):
