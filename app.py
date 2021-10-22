@@ -174,19 +174,22 @@ def AudioToText (VideoPath):
 	return response_standard_mp3
 
 def FacialEmotionDetection(videoName):
-	videofile = videoName
+    videofile = videoName
 # Face detection
-	detector = FER(mtcnn=True)
+    detector = FER(mtcnn=True)
 # Video predictions
-	video = Video(videofile)
+    video = Video(videofile)
 # Output list of dictionaries
-	raw_data = video.analyze(detector, display=False)
-	df = video.to_pandas(raw_data)
-	df = video.get_first_face(df)
-	df = video.get_emotions(df)
+    raw_data = video.analyze(detector, display=False)
+    df = video.to_pandas(raw_data)
+    df = video.get_first_face(df)
+    df = video.get_emotions(df)
+    Dict = {}
+    for i in df:
+        Dict[i] = (df[i].mean(axis=0))
 # Plot emotions
 #   fig = df.plot(figsize=(20, 16), fontsize=26).get_figure()
-	return df
+    return Dict
 
 
 def sentence_similarity(answers):
