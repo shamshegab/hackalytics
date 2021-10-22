@@ -76,7 +76,7 @@ def response():
 	return render_template('review_response.html')
 
 def create_output_file():
-	file_header = "date,email,name,question_number,ve_happy,ve_sad,te_neutral,te_admiration"
+	file_header = "date,email,name,question_number,rate,ve_happy,ve_sad,te_neutral,te_admiration"
 	#create file and write header to it
 	f = open("candidate_analysis.csv", "w")
 	f.write("".join((file_header,"\n")) )
@@ -101,9 +101,9 @@ def append_to_output_file(email,name,question_num,rate,video_emotions,text_emoti
 #get GCS bucket object 
 def upload_video_to_gcs(video,applicant_mail,question_num):
 	# Setting credentials using the downloaded JSON file
-	client = storage.Client.from_service_account_json(json_credentials_path='speech_to_text_credentials.json')
+	client = storage.Client.from_service_account_json(json_credentials_path='hackathon-sa-credentials.json')
 	# Creating bucket object
-	bucket = client.get_bucket('hackalytics')
+	bucket = client.get_bucket('hackalytics2')
 	# Name of the destination file in the bucket
 	gcs_file_name = "".join(("applicants/",applicant_mail,"/Q",str(question_num)))
 	print(gcs_file_name)
@@ -115,9 +115,9 @@ def upload_video_to_gcs(video,applicant_mail,question_num):
 #get GCS bucket object 
 def upload_result_to_gcs(applicant_mail):
 	# Setting credentials using the downloaded JSON file
-	client = storage.Client.from_service_account_json(json_credentials_path='speech_to_text_credentials.json')
+	client = storage.Client.from_service_account_json(json_credentials_path='hackathon-sa-credentials.json')
 	# Creating bucket object
-	bucket = client.get_bucket('hackalytics')
+	bucket = client.get_bucket('hackalytics2')
 	# Name of the destination file in the bucket
 	gcs_file_name = "".join(("applicants/",applicant_mail,"/candidate_analysis.csv"))
 	print(gcs_file_name)
@@ -147,7 +147,7 @@ def VideoToAudio (VideoPath ,AudioPath ):
 	return 1
 
 def AudioToText (VideoPath):
-	os.environ['GOOGLE_APPLICATION_CREDENTIALS']='speech_to_text_credentials.json'
+	os.environ['GOOGLE_APPLICATION_CREDENTIALS']='hackathon-sa-credentials.json'
 	speech_client = speech.SpeechClient()
 	media_file_name_mp3 = VideoPath
 	with open(media_file_name_mp3, 'rb') as f1:
