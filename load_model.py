@@ -5,9 +5,8 @@ def load_model():
     from multilabel_pipeline import MultiLabelPipeline
     from pprint import pprint
 
-    tokenizer = BertTokenizer.from_pretrained("monologg/bert-base-cased-goemotions-group")
-    model = BertForMultiLabelClassification.from_pretrained("monologg/bert-base-cased-goemotions-group")
-
+    tokenizer = BertTokenizer.from_pretrained("monologg/bert-base-cased-goemotions-original")
+    model = BertForMultiLabelClassification.from_pretrained("monologg/bert-base-cased-goemotions-original")
 
     goemotions = MultiLabelPipeline(
         model=model,
