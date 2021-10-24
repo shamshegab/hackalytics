@@ -5,7 +5,7 @@ from google.cloud import speech
 from google.protobuf.json_format import MessageToJson
 from load_model import load_model
 import json
-import tensorflow_hub as hub
+#import tensorflow_hub as hub
 import numpy as np
 import imageio
 #from fer import FER
@@ -15,10 +15,10 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-text2emotion = load_model()
+#text2emotion = load_model()
 
-module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
-model = hub.load(module_url)
+#module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
+#model = hub.load(module_url)
 
 @app.route('/' , methods=['POST', 'GET'])
 def index():
@@ -38,44 +38,50 @@ def index():
 		else:
 			#store video to GCS
 			video_list = [video,video2]
-			create_output_file()
+			create_output_files()
 			question_num=1
 			for i in range(len(video_list)):
 				upload_video_to_gcs(video_list[i],email,question_num)
 				##call emotion detection code --Mahmoud
-				#FER = FacialEmotionDetection(video)
+				#video_emotions,frames_timeline = FacialEmotionDetection(video,name,email,question_num)
 				#print(FER)
 				video_emotions = ( 1 , 2, 0,0,0,0,0 )
-
+				frames_timeline = """0,a,a,1,0.07,0,0.1,0,0.31,0,0.52
+				1,a,a,1,0.59,0.11,0,0.09,0,0.22,0
+				2,a,a,1,0.5,0.11,0,0.12,0,0.26,0
+				3,a,a,1,0.44,0.09,0,0.08,0,0.39,0
+				"""
 				#get transript from the video
 				recognized_text = get_transcript(video_list[i])
 				
 
 				##detect transcript to emotions  --Shams
-				result = text2emotion(recognized_text)
-				emotion_str = str(result)
-				print(emotion_str)
-				emotions_array=np.zeros(28)
-				for i in range(len(result[0]['labels'])):
-    				
-        				emotions_array[labels_t2e.get(result[0]['labels'][i])] = result[0]['scores'][i]
-				text_emotions= tuple(emotions_array)
-				print(text_emotions)
+				#result = text2emotion(recognized_text)
+				#emotion_str = str(result)
+				#print(emotion_str)
+				#emotions_array=np.zeros(28)
+				#for i in range(len(result[0]['labels'])):
+    			#	
+        		#		emotions_array[labels_t2e.get(result[0]['labels'][i])] = result[0]['scores'][i]
+				#text_emotions= tuple(emotions_array)
+				text_emotions = (0.9,0.5)
+				#print(text_emotions)
 
 				##call semantic analysis code --Abbas
 				ans = {
 					"Model_Answer": answers[i],
 					"Applicant_Answer": recognized_text
 				}
-				rate = sentence_similarity(ans)
+				#rate = sentence_similarity(ans)
+				rate =  0.9
 				print(rate)
 				# rate =  0.9
 
-				append_to_output_file(email,name,question_num,rate,video_emotions,text_emotions)
+				append_to_output_files(email,name,question_num,rate,video_emotions,text_emotions,frames_timeline)
 				question_num += 1
 
 			##upload results to GCS
-			# upload_result_to_gcs(email)
+			upload_result_to_gcs(email)
 			return redirect(url_for('response'))
 	return render_template('index.html')
 
@@ -83,15 +89,21 @@ def index():
 def response():
 	return render_template('review_response.html')
 
-def create_output_file():
-	file_header = "date,email,name,question_number,rate,ve_angry,ve_disgust,ve_fear,ve_happy,ve_sad,ve_surprise,ve_netural,te_Neutral,te_admiration,te_amusement,te_anger,te_annoyance,te_approval,te_caring,te_confusion,te_curiosity,te_desire,te_disappointment,te_disapproval,te_disgust,te_embarrassment,te_excitement,te_fear,te_gratitude,te_grief,te_joy,te_love,te_nervousness,te_optimism,te_pride,te_realization,te_relief,te_remorse,te_sadness,te_surprise"
+def create_output_files():
+	file1_header = "date,email,name,question_number,rate,ve_angry,ve_disgust,ve_fear,ve_happy,ve_sad,ve_surprise,ve_netural,te_Neutral,te_admiration,te_amusement,te_anger,te_annoyance,te_approval,te_caring,te_confusion,te_curiosity,te_desire,te_disappointment,te_disapproval,te_disgust,te_embarrassment,te_excitement,te_fear,te_gratitude,te_grief,te_joy,te_love,te_nervousness,te_optimism,te_pride,te_realization,te_relief,te_remorse,te_sadness,te_surprise"
 	#create file and write header to it
 	f = open("candidate_analysis.csv", "w")
-	f.write("".join((file_header,"\n")) )
+	f.write("".join((file1_header,"\n")) )
+	f.close()
+
+	file2_header = "frame_num,email,name,question_number,ve_angry,ve_disgust,ve_fear,ve_happy,ve_sad,ve_surprise,ve_netural"
+	#create file and write header to it
+	f = open("frames_timeline.csv", "w")
+	f.write("".join((file2_header,"\n")) )
 	f.close()
 	return 1
 
-def append_to_output_file(email,name,question_num,rate,video_emotions,text_emotions):
+def append_to_output_files(email,name,question_num,rate,video_emotions,text_emotions,frames_timeline):
 	f = open("candidate_analysis.csv", "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -103,6 +115,10 @@ def append_to_output_file(email,name,question_num,rate,video_emotions,text_emoti
 	text_emotions_str = text_emotions_str.strip("()")
 	record = "".join((date , "," , email , "," , name , "," , question_num_str , "," , rate_str , "," , video_emotions_str , "," , text_emotions_str,"\n" ))
 	f.write(record)
+	f.close()
+
+	f = open("frames_timeline.csv", "a")
+	f.write(frames_timeline)
 	f.close()
 	return 1
 
@@ -131,6 +147,11 @@ def upload_result_to_gcs(applicant_mail):
 	print(gcs_file_name)
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename("candidate_analysis.csv")
+
+	gcs_file_name2 = "".join(("applicants/frames_timeline/",applicant_mail,"_frames_timeline.csv"))
+	print(gcs_file_name)
+	object_name_in_gcs_bucket = bucket.blob(gcs_file_name2)
+	object_name_in_gcs_bucket.upload_from_filename("frames_timeline.csv")
 	return 1
 		
 
