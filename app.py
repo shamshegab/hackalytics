@@ -43,7 +43,9 @@ def index():
 			for i in range(len(video_list)):
 				upload_video_to_gcs(video_list[i],email,question_num)
 				##call emotion detection code --Mahmoud
+
 				#video_emotions,frames_timeline = FacialEmotionDetection(video,name,email,question_num)
+
 				#print(FER)
 				video_emotions = ( 1 , 2, 0,0,0,0,0 )
 				frames_timeline = """0,a,a,1,0.07,0,0.1,0,0.31,0,0.52
@@ -195,19 +197,22 @@ def AudioToText (VideoPath):
 	return response_standard_mp3
 
 def FacialEmotionDetection(videoName):
-	videofile = videoName
+    videofile = videoName
 # Face detection
-	detector = FER(mtcnn=True)
+    detector = FER(mtcnn=True)
 # Video predictions
-	video = Video(videofile)
+    video = Video(videofile)
 # Output list of dictionaries
-	raw_data = video.analyze(detector, display=False)
-	df = video.to_pandas(raw_data)
-	df = video.get_first_face(df)
-	df = video.get_emotions(df)
+    raw_data = video.analyze(detector, display=False)
+    df = video.to_pandas(raw_data)
+    df = video.get_first_face(df)
+    df = video.get_emotions(df)
+    Tup = []
+    for i in df:
+        Tup.append(df[i].mean(axis=0))
 # Plot emotions
 #   fig = df.plot(figsize=(20, 16), fontsize=26).get_figure()
-	return df
+    return tuple(Tup)
 
 
 def sentence_similarity(answers):
