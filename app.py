@@ -25,6 +25,8 @@ def index():
 	if request.method == 'POST':
 		video = request.form['video']
 		video2 = request.form['video2']
+		video3 = request.form['video3']
+		video4 = request.form['video4']
 		name = request.form['name']
 		email = request.form['email']
 		answers = [
@@ -37,7 +39,7 @@ def index():
 			flash('please upload your answer first')
 		else:
 			#store video to GCS
-			video_list = [video,video2]
+			video_list = [video,video2,video3,video4]
 			create_output_files()
 			question_num=1
 			for i in range(len(video_list)):
