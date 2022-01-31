@@ -31,7 +31,9 @@ def index():
 		email = request.form['email']
 		answers = [
 			"An ODS contains only a short window of data, while a data warehouse contains the entire history of data.",
-			"Hadoop Ecosystem is a platform or a suite which provides various services to solve the big data problems. It includes Apache projects and various commercial tools and solutions. There are four major elements of Hadoop i.e. HDFS, MapReduce, YARN, and Hadoop Common."
+			"Hadoop Ecosystem is a platform or a suite which provides various services to solve the big data problems. It includes Apache projects and various commercial tools and solutions. There are four major elements of Hadoop i.e. HDFS, MapReduce, YARN, and Hadoop Common.",
+			"model answer3",
+			"model answer4"
 		]
 		if not video:
 			flash('please upload your answer first')
@@ -286,4 +288,4 @@ labels_t2e = {
 			
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run(debug=True,host="0.0.0.0",port=int(os.environ.get("PORT",8080) ) )
