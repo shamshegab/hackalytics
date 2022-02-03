@@ -3,6 +3,7 @@ import moviepy.editor as mp
 import os
 from google.cloud import speech
 from video_analysis import classify_video
+from audio_analysis import classify_audio
 from google.cloud import storage
 from datetime import datetime
 
@@ -33,19 +34,26 @@ def index():
 			question_num=1
 			for i in range(len(video_list)):
 				video_path = get_video_path(video_list[i],question_num)
-				print(video_path)
+				print(video_path)				
+
+				#store video to GCS
+				upload_video_to_gcs(video_path,email,question_num)
 
 				#get transript from the video
 				recognized_text = get_transcript(video_path)
-				print(recognized_text)				
+				print(recognized_text)
+				
+				
+				print("Begin Audio analysis")
+				audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				print("Audio analysis results:")
+				print(audio_pred_results)
+
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
 				print(video_pred_results)
 				
-
-				#store video to GCS
-				upload_video_to_gcs(video_path,email,question_num)
 				append_to_output_files(email,name,question_num)
 				question_num += 1
 				remove_temp_video(video_path)
