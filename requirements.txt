@@ -1,4 +1,5 @@
 Flask==2.0.2
+moviepy
 google-cloud-speech
 google-cloud-storage
 imageio==2.4.1
