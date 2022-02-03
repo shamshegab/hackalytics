@@ -1,14 +1,13 @@
 Flask==2.0.2
 google-cloud-speech
 google-cloud-storage
-moviepy
 imageio==2.4.1
 ffmpeg-python
 fer
-torch
-transformers==2.11.0
 attrdict==2.0.1
-tensorflow
 tensorflow_hub
+tensorflow
+opencv-python
+imutils
 numpy
 gunicorn==20.1.0
