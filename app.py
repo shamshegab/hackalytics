@@ -3,6 +3,7 @@ import moviepy.editor as mp
 import os
 from google.cloud import speech
 from video_analysis import classify_video
+from audio_analysis import classify_audio
 from google.cloud import storage
 from datetime import datetime
 
@@ -37,14 +38,18 @@ def index():
 
 				
 
-
 				#get transript from the video
 				# recognized_text = get_transcript(video_path)
 				# print(recognized_text)
 				
 				#convert video to audio
-				# VideoToAudio(video_path,'audio.mp3')
+				VideoToAudio(video_path,'audio.mp3')
 				
+				print("Begin Audio analysis")
+				audio_pred_results = classify_audio('audio.mp3')
+				print("Audio analysis results:")
+				print(audio_pred_results)
+
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
