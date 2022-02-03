@@ -36,17 +36,16 @@ def index():
 				video_path = get_video_path(video_list[i],question_num)
 				print(video_path)
 
-				
+				#store video to GCS
+				upload_video_to_gcs(video_path,email,question_num)
 
 				#get transript from the video
-				# recognized_text = get_transcript(video_path)
-				# print(recognized_text)
+				recognized_text = get_transcript(video_path)
+				print(recognized_text)
 				
-				#convert video to audio
-				VideoToAudio(video_path,'audio.mp3')
 				
 				print("Begin Audio analysis")
-				audio_pred_results = classify_audio('audio.mp3')
+				audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
 				print("Audio analysis results:")
 				print(audio_pred_results)
 
@@ -55,9 +54,6 @@ def index():
 				print("Video analysis results:")
 				print(video_pred_results)
 				
-
-				#store video to GCS
-				upload_video_to_gcs(video_path,email,question_num)
 				append_to_output_files(email,name,question_num)
 				question_num += 1
 				remove_temp_video(video_path)
