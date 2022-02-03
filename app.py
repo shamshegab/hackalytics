@@ -35,16 +35,9 @@ def index():
 				video_path = get_video_path(video_list[i],question_num)
 				print(video_path)
 
-				
-
-
 				#get transript from the video
-				# recognized_text = get_transcript(video_path)
-				# print(recognized_text)
-				
-				#convert video to audio
-				# VideoToAudio(video_path,'audio.mp3')
-				
+				recognized_text = get_transcript(video_path)
+				print(recognized_text)				
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
