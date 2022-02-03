@@ -2,10 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect , flash
 import moviepy.editor as mp
 import os
 from google.cloud import speech
-from google.protobuf.json_format import MessageToJson
-from load_model import load_model
 import json
-import numpy as np
 import imageio
 from google.cloud import storage
 from datetime import datetime
@@ -135,9 +132,6 @@ def upload_result_to_gcs(applicant_mail):
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename(os.path.join( temp_folder_path , "candidate_analysis.csv" ))
 
-	gcs_file_name2 = "".join(("applicants/frames_timeline/",applicant_mail,"_frames_timeline.csv"))
-	object_name_in_gcs_bucket = bucket.blob(gcs_file_name2)
-	object_name_in_gcs_bucket.upload_from_filename(os.path.join( temp_folder_path , "frames_timeline.csv" ))
 	return 1
 		
 
