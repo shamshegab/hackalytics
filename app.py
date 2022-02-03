@@ -2,24 +2,14 @@ from flask import Flask, render_template, url_for, request, redirect , flash
 import moviepy.editor as mp
 import os
 from google.cloud import speech
-from google.protobuf.json_format import MessageToJson
-from load_model import load_model
-import json
-#import tensorflow_hub as hub
-import numpy as np
-import imageio
-#from fer import FER
-#from fer import Video
+from video_analysis import classify_video
 from google.cloud import storage
 from datetime import datetime
 
 
 app = Flask(__name__)
 temp_folder_path = os.path.join( os.path.dirname(os.path.abspath(__file__)) , 'temp_folder' )
-#text2emotion = load_model()
 
-#module_url = 'https://tfhub.dev/google/universal-sentence-encoder/4'
-#model = hub.load(module_url)
 
 @app.route('/' , methods=['POST', 'GET'])
 def index():
@@ -51,43 +41,25 @@ def index():
 				video_path = get_video_path(video_list[i],question_num)
 				print(video_path)
 
+				
+
+
+				#get transript from the video
+				# recognized_text = get_transcript(video_path)
+				# print(recognized_text)
+				
+				#convert video to audio
+				# VideoToAudio(video_path,'audio.mp3')
+				
+				print("Begin Video analysis")
+				video_pred_results = classify_video(video_path,100)
+				print("Video analysis results:")
+				print(video_pred_results)
+				
+
 				#store video to GCS
 				upload_video_to_gcs(video_path,email,question_num)
-				##call emotion detection code --Mahmoud
-
-				#video_emotions,frames_timeline = FacialEmotionDetection(video,name,email,question_num)
-
-				#print(FER)
-				video_emotions = ( 1 , 2, 0,0,0,0,0 )
-				frames_timeline = """0,a,a,1,0.07,0,0.1,0,0.31,0,0.52
-				1,a,a,1,0.59,0.11,0,0.09,0,0.22,0
-				2,a,a,1,0.5,0.11,0,0.12,0,0.26,0
-				3,a,a,1,0.44,0.09,0,0.08,0,0.39,0
-				"""
-				#get transript from the video
-				recognized_text = get_transcript(video_path)
-				print(recognized_text)
-				##detect transcript to emotions  --Shams
-				#result = text2emotion(recognized_text)
-				#emotion_str = str(result)
-				#print(emotion_str)
-				#emotions_array=np.zeros(28)
-				#for i in range(len(result[0]['labels'])):
-    			#	
-        		#		emotions_array[labels_t2e.get(result[0]['labels'][i])] = result[0]['scores'][i]
-				#text_emotions= tuple(emotions_array)
-				text_emotions = (0.9,0.5)
-				#print(text_emotions)
-
-				##call semantic analysis code --Abbas
-				ans = {
-					"Model_Answer": answers[i],
-					"Applicant_Answer": recognized_text
-				}
-				#rate = sentence_similarity(ans)
-				rate =  0.9
-
-				append_to_output_files(email,name,question_num,rate,video_emotions,text_emotions,frames_timeline)
+				append_to_output_files(email,name,question_num)
 				question_num += 1
 				remove_temp_video(video_path)
 
@@ -120,36 +92,26 @@ def get_video_path(video,question_num):
 	return video_path
 
 def create_output_files():
-	file1_header = "date,email,name,question_number,rate,ve_angry,ve_disgust,ve_fear,ve_happy,ve_sad,ve_surprise,ve_netural,te_Neutral,te_admiration,te_amusement,te_anger,te_annoyance,te_approval,te_caring,te_confusion,te_curiosity,te_desire,te_disappointment,te_disapproval,te_disgust,te_embarrassment,te_excitement,te_fear,te_gratitude,te_grief,te_joy,te_love,te_nervousness,te_optimism,te_pride,te_realization,te_relief,te_remorse,te_sadness,te_surprise"
+	file1_header = "date,email,name,question_number"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
 	f.close()
-
-	file2_header = "frame_num,email,name,question_number,ve_angry,ve_disgust,ve_fear,ve_happy,ve_sad,ve_surprise,ve_netural"
-	#create file and write header to it
-	f = open( os.path.join( temp_folder_path , "frames_timeline.csv" ), "w")
-	f.write("".join((file2_header,"\n")) )
-	f.close()
 	return 1
 
-def append_to_output_files(email,name,question_num,rate,video_emotions,text_emotions,frames_timeline):
+def append_to_output_files(email,name,question_num):
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
-	rate_str = str(rate)
-	video_emotions_str = str(video_emotions)
-	video_emotions_str = video_emotions_str.strip("()")
-	text_emotions_str = str(text_emotions)
-	text_emotions_str = text_emotions_str.strip("()")
-	record = "".join((date , "," , email , "," , name , "," , question_num_str , "," , rate_str , "," , video_emotions_str , "," , text_emotions_str,"\n" ))
+	#video_emotions_str = str(video_emotions)
+	#video_emotions_str = video_emotions_str.strip("()")
+	#text_emotions_str = str(text_emotions)
+	#text_emotions_str = text_emotions_str.strip("()")
+	record = "".join((date , "," , email , "," , name , "," , question_num_str ,"\n" ))
 	f.write(record)
 	f.close()
 
-	f = open(os.path.join( temp_folder_path , "frames_timeline.csv" ), "a")
-	f.write(frames_timeline)
-	f.close()
 	return 1
 
 #get GCS bucket object 
@@ -176,9 +138,6 @@ def upload_result_to_gcs(applicant_mail):
 	object_name_in_gcs_bucket = bucket.blob(gcs_file_name)
 	object_name_in_gcs_bucket.upload_from_filename(os.path.join( temp_folder_path , "candidate_analysis.csv" ))
 
-	gcs_file_name2 = "".join(("applicants/frames_timeline/",applicant_mail,"_frames_timeline.csv"))
-	object_name_in_gcs_bucket = bucket.blob(gcs_file_name2)
-	object_name_in_gcs_bucket.upload_from_filename(os.path.join( temp_folder_path , "frames_timeline.csv" ))
 	return 1
 		
 
@@ -225,92 +184,7 @@ def AudioToText (AudioPath):
 	)
 	return response_standard_mp3
 
-def FacialEmotionDetection(videoName):
-    videofile = videoName
-# Face detection
-    detector = FER(mtcnn=True)
-# Video predictions
-    video = Video(videofile)
-# Output list of dictionaries
-    raw_data = video.analyze(detector, display=False)
-    df = video.to_pandas(raw_data)
-    df = video.get_first_face(df)
-    df = video.get_emotions(df)
-    Tup = []
-    for i in df:
-        Tup.append(df[i].mean(axis=0))
-# Plot emotions
-#   fig = df.plot(figsize=(20, 16), fontsize=26).get_figure()
-    return tuple(Tup)
-
-
-def sentence_similarity(answers):
-	assert len(answers) == 2
-	assert "Model_Answer" in answers
-	assert "Applicant_Answer" in answers
-
-	answers_list = [a for a in answers.values()]
-	embeddings = model(answers_list)
-	similarity = np.inner(embeddings, embeddings)
-	return similarity[0][1]
-
-
-labels_t2e = {
-	'neutral': 0,
-    'admiration': 1,
-    'amusement':2,
-		 'anger':        
-             3 ,
-		 'annoyance':        
-             4 ,
-		 'approval':        
-             5 ,
-		 'caring':        
-             6 ,
-		 'confusion':        
-             7 ,
-		 'curiosity':        
-             8 ,
-		 'desire':        
-             9 ,
-		 'dissappointment':        
-             10 ,
-		 'disapproval':        
-             11 ,
-		 'disgust':        
-             12 ,
-		 'embarrassment':        
-             13 ,
-		 'excitement':        
-             14 ,
-		 'fear':        
-             15 ,
-		 'gratitude':        
-             16 ,
-		 'grief':        
-             17 ,
-		 'joy':        
-             18 ,
-		 'love':        
-             19 ,
-		 'nervousness':        
-             20 ,
-		 'optimism':        
-             21 ,
-		 'pride':        
-             22 ,
-		 'realization':        
-             23 ,
-		 'relief':        
-             24 ,
-		 'remorse':        
-             25 ,
-		 'sadness':        
-             26 ,
-		 'surprise':        
-             27 
-}
-			
+	
 
 if __name__ == "__main__":
 	app.run(debug=True,host="0.0.0.0",port=int(os.environ.get("PORT",8080) ) )
