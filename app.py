@@ -3,6 +3,7 @@ import moviepy.editor as mp
 import os
 from google.cloud import speech
 from video_analysis import classify_video
+from audio_analysis import classify_audio
 from google.cloud import storage
 from datetime import datetime
 
@@ -20,6 +21,7 @@ def index():
 		video4 = request.files['video4']
 		name = request.form['name']
 		email = request.form['email']
+		vacancy = request.form['vacancy']
 		if not video:
 			flash('please upload your answer first')
 		if not video2:
@@ -33,27 +35,27 @@ def index():
 			question_num=1
 			for i in range(len(video_list)):
 				video_path = get_video_path(video_list[i],question_num)
-				print(video_path)
+				print(video_path)				
 
-				
-
+				#store video to GCS
+				upload_video_to_gcs(vacancy,video_path,email,question_num)
 
 				#get transript from the video
-				# recognized_text = get_transcript(video_path)
-				# print(recognized_text)
+				recognized_text = get_transcript(video_path)
+				print(recognized_text)
 				
-				#convert video to audio
-				# VideoToAudio(video_path,'audio.mp3')
 				
+				print("Begin Audio analysis")
+				audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				print("Audio analysis results:")
+				print(audio_pred_results)
+
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
 				print(video_pred_results)
 				
-
-				#store video to GCS
-				upload_video_to_gcs(video_path,email,question_num)
-				append_to_output_files(email,name,question_num)
+				append_to_output_files(vacancy,email,name,question_num)
 				question_num += 1
 				remove_temp_video(video_path)
 
@@ -86,14 +88,14 @@ def get_video_path(video,question_num):
 	return video_path
 
 def create_output_files():
-	file1_header = "date,email,name,question_number"
+	file1_header = "vacancy,date,email,name,question_number"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
 	f.close()
 	return 1
 
-def append_to_output_files(email,name,question_num):
+def append_to_output_files(vacancy,email,name,question_num):
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -102,14 +104,14 @@ def append_to_output_files(email,name,question_num):
 	#video_emotions_str = video_emotions_str.strip("()")
 	#text_emotions_str = str(text_emotions)
 	#text_emotions_str = text_emotions_str.strip("()")
-	record = "".join((date , "," , email , "," , name , "," , question_num_str ,"\n" ))
+	record = "".join((vacancy, ",", date , "," , email , "," , name , "," , question_num_str ,"\n" ))
 	f.write(record)
 	f.close()
 
 	return 1
 
 #get GCS bucket object 
-def upload_video_to_gcs(video,applicant_mail,question_num):
+def upload_video_to_gcs(vacancy,video,applicant_mail,question_num):
 	# Setting credentials using the downloaded JSON file
 	client = storage.Client.from_service_account_json(json_credentials_path='hackathon-sa-credentials.json')
 	# Creating bucket object
