@@ -20,7 +20,6 @@ def index():
 		video4 = request.files['video4']
 		name = request.form['name']
 		email = request.form['email']
-		
 		if not video:
 			flash('please upload your answer first')
 		if not video2:
