@@ -3,10 +3,12 @@ import imutils
 import cv2
 from keras.models import load_model
 import numpy as np
+
+
 def classify_video(video_path, sample_rate):
     face_detection  = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     emotion_classifier = load_model('trained-model.h5', compile=False)
-    EMOTIONS = ['aggressive', 'rude', 'hessitant', 'friendly', 'dissapointed', 'suprised', 'neutral']
+    EMOTIONS = ['aggressive', 'rude', 'hesitant', 'friendly', 'disappointed', 'suprised', 'neutral']
     count = 0
     vidcap = cv2.VideoCapture(video_path)
     success,image = vidcap.read()

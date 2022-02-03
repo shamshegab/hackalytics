@@ -6,9 +6,10 @@ imageio==2.4.1
 ffmpeg-python
 fer
 attrdict==2.0.1
-tensorflow_hub
 tensorflow
 opencv-python
 imutils
 numpy
 gunicorn==20.1.0
+pandas
+librosa
