@@ -21,8 +21,9 @@ def get_video_path(video,question_num):
 	video_path = os.path.join( temp_folder_path , videofilename )
 	return video_path
 
+
 def create_output_files():
-	file1_header = "vacancy,date,email,name,question_number,v_aggressive,v_rude,v_hessitant,v_friendly,v_dissapointed,v_suprised,v_neutral"
+	file1_header = "email,name,vacancy,date,question_number,source,emotion,value"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
@@ -30,14 +31,12 @@ def create_output_files():
 	return 1
 
 
-def append_to_output_files(vacancy,email,name,question_num,video_pred_results):
-	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "a")
+def append_to_output_files(vacancy, email, name, question_num, source, emotion, value):
+	f = open(os.path.join(temp_folder_path , "candidate_analysis.csv" ), "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
-	video_pred_results_str = str(video_pred_results)
-	video_pred_results_str = text_emotions_str.strip("{}")
-	record = "".join((vacancy, ",", date , "," , email , "," , name , "," , question_num_str, "," ,video_pred_results_str,"\n" ))
+	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",", value, "\n"))
 	f.write(record)
 	f.close()
 

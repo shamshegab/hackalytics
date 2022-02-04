@@ -4,7 +4,7 @@ import working_directory
 import google_cloud_platform
 #from video_analysis import classify_video
 #from audio_analysis import classify_audio
-
+#from english_fluency import fluency_detector
 
 app = Flask(__name__)
 temp_folder_path = os.path.join( os.path.dirname(os.path.abspath(__file__)) , 'temp_folder' )
@@ -20,6 +20,7 @@ def index():
 		name = request.form['name']
 		email = request.form['email']
 		vacancy = request.form['vacancy']
+
 		if not video:
 			flash('please upload your answer first')
 		if not video2:
@@ -34,27 +35,41 @@ def index():
 			question_num=1
 			for i in range(len(video_list)):
 				video_path = working_directory.get_video_path(video_list[i],question_num)
-				print(video_path)				
+				print(video_path)	
+
+				audio_path = os.path.join(temp_folder_path , "video_audio.mp3")
+				print(audio_path)				
 
 				#store video to GCS
-				google_cloud_platform.upload_video_to_gcs(vacancy,video_path,email,question_num)
+				#google_cloud_platform.upload_video_to_gcs(vacancy,video_path,email,question_num)
 
 				#get transript from the video
 				recognized_text = google_cloud_platform.get_transcript(video_path)
 				print(recognized_text)
 				
 				
-				print("Begin Audio analysis")
-				#audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
-				print("Audio analysis results:")
-				#print(audio_pred_results)
-
-				print("Begin Video analysis")
-				#video_pred_results = classify_video(video_path,100)
-				print("Video analysis results:")
-				#print(video_pred_results)
+#				print("Begin Audio analysis")
+#				audio_pred_results = classify_audio(audio_path)
+#				print("Audio analysis results:")
+#				print(audio_pred_results)
+#
+#				for emotion, value in audio_pred_results.items():
+#					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
+#
+#          
+#        		print("Begin Fluency analysis")
+#				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
+#				print("Fluency Score: ", fluency_score)
+#
+#        
+#				print("Begin Video analysis")
+#				video_pred_results = classify_video(video_path,100)
+#				print("Video analysis results:")
+#				print(video_pred_results)
+#				
+#				for emotion, value in video_pred_results.items():
+#					append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
 				
-				#working_directory.append_to_output_files(vacancy,email,name,question_num,video_pred_results)
 				question_num += 1
 				working_directory.remove_temp_video(video_path)
 
