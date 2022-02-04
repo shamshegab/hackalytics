@@ -2,8 +2,8 @@ from flask import Flask, render_template, url_for, request, redirect , flash
 import os
 import working_directory
 import google_cloud_platform
-#from video_analysis import classify_video
-#from audio_analysis import classify_audio
+from video_analysis import classify_video
+from audio_analysis import classify_audio
 #from english_fluency import fluency_detector
 
 app = Flask(__name__)
@@ -47,19 +47,18 @@ def index():
 				recognized_text = google_cloud_platform.get_transcript(video_path)
 				print(recognized_text)
 				
-				
+
+    			#print("Begin Fluency analysis")
+				#fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				#print("Fluency Score: ", fluency_score)
+
 				print("Begin Audio analysis")
 				audio_pred_results = classify_audio(audio_path)
 				print("Audio analysis results:")
 				print(audio_pred_results)
 
 				for emotion, value in audio_pred_results.items():
-					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
-
-          
-        		print("Begin Fluency analysis")
-				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
-				print("Fluency Score: ", fluency_score)
+					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
 
         
 				print("Begin Video analysis")
@@ -68,7 +67,7 @@ def index():
 				print(video_pred_results)
 				
 				for emotion, value in video_pred_results.items():
-					append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
+					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
 				
 				question_num += 1
 				working_directory.remove_temp_video(video_path)
