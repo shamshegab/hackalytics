@@ -15,22 +15,20 @@ def classify_audio(audio_path):
     print("Loaded SER model from disk")
     
 
-    X, sample_rate = librosa.load(audio_path, res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
+    X, sample_rate = librosa.load(audio_path, res_type='kaiser_fast', duration=2.5, sr=22050*2, offset=0.5)
     sample_rate = np.array(sample_rate)
-    livedf2 = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
-    livedf2= pd.DataFrame(data=livedf2)
-    livedf2 = livedf2.stack().to_frame().T
-    twodim= np.expand_dims(livedf2, axis=2)
+    livedf = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
+    livedf = pd.DataFrame(data=livedf)
+    livedf = livedf.stack().to_frame().T
+    twodim = np.expand_dims(livedf, axis=2)
 
     livepreds = loaded_model.predict(twodim, batch_size=32, verbose=1)
-    livepreds1=livepreds.argmax(axis=1)
-    liveabc = livepreds1.astype(int).flatten()
-    liveabc = str(liveabc[0])
-
-    emotions_dict = {'0': 'aggressive', '1': 'confident', '2': 'hesitant', '3': 'friendly', '4': 'disappointed',
-                     '5': 'aggressive', '6': 'confident', '7': 'hesitant', '8': 'friendly', '9': 'disappointed'}
-    emotion = emotions_dict[liveabc]
-    return emotion
+    emotions = {'aggressive': round(livepreds[0][0] + livepreds[0][5], 2),
+                'confident': round(livepreds[0][1] + livepreds[0][6], 2),
+                'hesitant': round(livepreds[0][2] + livepreds[0][7], 2),
+                'friendly': round(livepreds[0][3] + livepreds[0][8], 2),
+                'disappointed': round(livepreds[0][4] + livepreds[0][9], 2)}
+    return emotions
 
 
 
