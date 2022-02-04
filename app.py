@@ -48,27 +48,27 @@ def index():
 				print(recognized_text)
 				
 				
-#				print("Begin Audio analysis")
-#				audio_pred_results = classify_audio(audio_path)
-#				print("Audio analysis results:")
-#				print(audio_pred_results)
-#
-#				for emotion, value in audio_pred_results.items():
-#					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
-#
-#          
-#        		print("Begin Fluency analysis")
-#				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
-#				print("Fluency Score: ", fluency_score)
-#
-#        
-#				print("Begin Video analysis")
-#				video_pred_results = classify_video(video_path,100)
-#				print("Video analysis results:")
-#				print(video_pred_results)
-#				
-#				for emotion, value in video_pred_results.items():
-#					append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
+				print("Begin Audio analysis")
+				audio_pred_results = classify_audio(audio_path)
+				print("Audio analysis results:")
+				print(audio_pred_results)
+
+				for emotion, value in audio_pred_results.items():
+					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
+
+          
+        		print("Begin Fluency analysis")
+				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				print("Fluency Score: ", fluency_score)
+
+        
+				print("Begin Video analysis")
+				video_pred_results = classify_video(video_path,100)
+				print("Video analysis results:")
+				print(video_pred_results)
+				
+				for emotion, value in video_pred_results.items():
+					append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
 				
 				question_num += 1
 				working_directory.remove_temp_video(video_path)
