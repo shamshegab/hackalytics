@@ -57,7 +57,7 @@ def index():
 					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
 
           
-        print("Begin Fluency analysis")
+        			print("Begin Fluency analysis")
 				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
 				print("Fluency Score: ", fluency_score)
 
