@@ -6,7 +6,7 @@ from video_analysis import classify_video
 from audio_analysis import classify_audio
 from google.cloud import storage
 from datetime import datetime
-
+from english_fluency import fluency_detector
 
 app = Flask(__name__)
 temp_folder_path = os.path.join( os.path.dirname(os.path.abspath(__file__)) , 'temp_folder' )
@@ -49,6 +49,10 @@ def index():
 				audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
 				print("Audio analysis results:")
 				print(audio_pred_results)
+
+				print("Begin Fluency analysis")
+				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				print("Fluency Score: ", fluency_score)
 
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)

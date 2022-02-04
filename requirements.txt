@@ -13,3 +13,6 @@ numpy
 gunicorn==20.1.0
 pandas
 librosa
+pydub
+soundfile
+my-voice-analysis
