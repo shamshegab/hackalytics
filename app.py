@@ -15,8 +15,6 @@ def index():
 	if request.method == 'POST':
 		video = request.files['video']
 		video2 = request.files['video2']
-		video3 = request.files['video3']
-		video4 = request.files['video4']
 		name = request.form['name']
 		email = request.form['email']
 		vacancy = request.form['vacancy']
@@ -30,7 +28,7 @@ def index():
 			print("The temp directory is created!")
 			working_directory.create_output_files()
 
-			video_list = [video,video2,video3,video4]
+			video_list = [video,video2]
 			
 			question_num=1
 			for i in range(len(video_list)):
