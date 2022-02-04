@@ -102,7 +102,7 @@ def get_video_path(video,question_num):
 	return video_path
 
 def create_output_files():
-	file1_header = "email,name,vacancy,date,question_number,emotion,source,value"
+	file1_header = "email,name,vacancy,date,question_number,source,emotion,value"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
