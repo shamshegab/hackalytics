@@ -58,7 +58,7 @@ def index():
 				print(audio_pred_results)
 
 				for emotion, value in audio_pred_results.items():
-					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion,str(value)))
+					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
 
         
 				print("Begin Video analysis")
@@ -67,7 +67,7 @@ def index():
 				print(video_pred_results)
 				
 				for emotion, value in video_pred_results.items():
-					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, str(value))
+					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
 				
 				question_num += 1
 				working_directory.remove_temp_video(video_path)

@@ -36,6 +36,7 @@ def append_to_output_files(vacancy, email, name, question_num, source, emotion, 
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
+	value = str(value)
 	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",", value, "\n"))
 	f.write(record)
 	f.close()
