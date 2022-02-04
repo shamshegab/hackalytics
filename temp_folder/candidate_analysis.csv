@@ -1,5 +1,1 @@
-date,email,name,question_number
-03/02/2022 17:32:47,qwol,qw,1
-03/02/2022 17:33:29,qwol,qw,2
-03/02/2022 17:34:38,qwol,qw,3
-03/02/2022 17:35:19,qwol,qw,4
+vacancy,date,email,name,question_number,v_aggressive,v_rude,v_hessitant,v_friendly,v_dissapointed,v_suprised,v_neutral
