@@ -35,7 +35,10 @@ def index():
 			question_num=1
 			for i in range(len(video_list)):
 				video_path = get_video_path(video_list[i],question_num)
-				print(video_path)				
+				print(video_path)	
+
+				audio_path = os.path.join(temp_folder_path , "video_audio.mp3")
+				print(audio_path)				
 
 				#store video to GCS
 				upload_video_to_gcs(vacancy,video_path,email,question_num)
@@ -46,20 +49,27 @@ def index():
 				
 				
 				print("Begin Audio analysis")
-				audio_pred_results = classify_audio(os.path.join( temp_folder_path , "video_audio.mp3" ))
+				audio_pred_results = classify_audio(audio_path)
 				print("Audio analysis results:")
 				print(audio_pred_results)
 
-				print("Begin Fluency analysis")
+				for emotion, value in audio_pred_results.items():
+					append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
+
+          
+        			print("Begin Fluency analysis")
 				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
 				print("Fluency Score: ", fluency_score)
 
+        
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
 				print(video_pred_results)
 				
-				append_to_output_files(vacancy,email,name,question_num)
+				for emotion, value in video_pred_results.items():
+					append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
+				
 				question_num += 1
 				remove_temp_video(video_path)
 
@@ -92,15 +102,15 @@ def get_video_path(video,question_num):
 	return video_path
 
 def create_output_files():
-	file1_header = "vacancy,date,email,name,question_number"
+	file1_header = "email,name,vacancy,date,question_number,emotion,source,value"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
 	f.close()
 	return 1
 
-def append_to_output_files(vacancy,email,name,question_num):
-	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "a")
+def append_to_output_files(vacancy, email, name, question_num, source, emotion, value):
+	f = open(os.path.join(temp_folder_path , "candidate_analysis.csv" ), "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
@@ -108,7 +118,7 @@ def append_to_output_files(vacancy,email,name,question_num):
 	#video_emotions_str = video_emotions_str.strip("()")
 	#text_emotions_str = str(text_emotions)
 	#text_emotions_str = text_emotions_str.strip("()")
-	record = "".join((vacancy, ",", date , "," , email , "," , name , "," , question_num_str ,"\n" ))
+	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",", value, "\n"))
 	f.write(record)
 	f.close()
 
