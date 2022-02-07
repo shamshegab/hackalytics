@@ -100,3 +100,16 @@ body
   opacity: 1;
   transition: 0s
 }
+
+div#loading {
+    width: 200px;
+    height: 200px;
+    display: none;
+    background: url(/static/loadingimage.gif) no-repeat;
+    cursor: wait;
+  }
+  
+  #loading {
+    align-content: center;
+    text-align: center;
+  }

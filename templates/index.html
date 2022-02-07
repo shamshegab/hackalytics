@@ -9,8 +9,11 @@
 	</head>
 
 	<body>
-		<h1 style="text-align: center">Application Form</h1>
+        <div id="loading">
+			<h4 style="text-align: center">Your submission is under analysis</h1>
+		</div>
 		<div id="formContainer">
+            <h1 style="text-align: center">Application Form</h1>
 			<form id="formC" action="/" method="POST" enctype = "multipart/form-data">
 				<div id="personal_info">
 					<div class="column">
@@ -40,10 +43,19 @@
 				      	<input class="vid-btn" type="file" placeholder="please upload your video" id="video2" name="video2" accept="video/*" class="form-control" value="{{ request.files['video2'] }}">
 					</div>
 				</div>
-
-				<button id="submit_btn" type="submit" class="btn btn-primary">Submit</button>
-
+				<button id="submit_btn" type="submit" class="btn" onclick="loading()">Submit</button>
 			</form>
+            <script type="text/javascript">
+				function loading()
+				{
+					var main_page = document.getElementById("formContainer");
+					var loading_page = document.getElementById("loading");
+					if (main_page.style.display === "none") 
+  						{main_page.style.display = "block"; loading_page.style.display = "none";}
+  					else 
+  						{main_page.style.display = "none"; loading_page.style.display = "block";}     
+				}
+			</script>
 		</div>
 	</body>
 </html>
