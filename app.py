@@ -48,6 +48,8 @@ def index():
 				
 				print("Begin Text analysis")
 				text_emotions = text_emotions_analysis.get_emotions(recognized_text)
+				print("Text analysis results:")
+				print(text_emotions)
 
 				print("Begin Fluency analysis")
 				fluency_score = fluency_detector(os.path.join(temp_folder_path, "video_audio.mp3"))

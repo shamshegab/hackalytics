@@ -23,7 +23,7 @@ def get_video_path(video,question_num):
 
 
 def create_output_files():
-	file1_header = "email,name,vacancy,date,question_number,source,emotion,value,emotional_intel,fluency,final_score"
+	file1_header = "name,job,Question,emotion,'emotion source',value,'emotionl intelligence','English Fluency','Total rank'"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
@@ -38,7 +38,7 @@ def append_to_output_files(vacancy, email, name, question_num, source, emotion, 
 	question_num_str = str(question_num)
 	value_str = str(value)
 	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",",
-	 				value_str, ",", emotional_intelligence, ",", fluency_score, ",", final_score, "\n"))
+	 				value_str, ",", str(emotional_intelligence), ",", str(fluency_score), ",", str(final_score), "\n"))
 	f.write(record)
 	f.close()
 	return 1
@@ -68,7 +68,7 @@ def append_output(vacancy, email, name, question_num, fluency_score, audio_pred_
 
 		emotional_intelligence = emotional_intelligence + (normalised_emotion * em_score)
 	
-	fluency_score = fluency_score/100
+	fluency_score = float(fluency_score)/100
 	final_score = (emotional_intelligence + fluency_score)/2
 
 	for emotion, value in audio_pred_results.items():
