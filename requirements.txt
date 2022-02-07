@@ -16,3 +16,4 @@ librosa
 pydub
 soundfile
 my-voice-analysis
+text2emotion

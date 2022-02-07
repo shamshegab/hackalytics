@@ -5,6 +5,7 @@ import google_cloud_platform
 from video_analysis import classify_video
 from audio_analysis import classify_audio
 from english_fluency import fluency_detector
+import text_emotions_analysis
 
 app = Flask(__name__)
 temp_folder_path = os.path.join( os.path.dirname(os.path.abspath(__file__)) , 'temp_folder' )
@@ -45,6 +46,8 @@ def index():
 				recognized_text = google_cloud_platform.get_transcript(video_path)
 				print(recognized_text)
 				
+				print("Begin Text analysis")
+				text_emotions= text_emotions_analysis.get_emotions(recognized_text)
 
 				print("Begin Fluency analysis")
 				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
