@@ -26,15 +26,17 @@
 					    <input class="theInputs" type="text" placeholder="please enter vacancy name" id="vacancy" name="vacancy" class="form-control" value="{{ request.form['vacancy'] }}" required>
 					</div>
 				</div>
-
+				<p style="font-family: Serif;font-size: 20px;font-style: italic;">Please answer the following questions in 1 min video and upload it</p>
 				<div id="questions_form">
-					<p style="font-family: Serif;font-size: 20px;font-style: italic;">Please read the following questions carefully and submit your answers</p>
+					
 				  	<div class="column">
-				  		<label class="questions" for="vid">Q1: introduce yourself</label>
+				  		<label class="questions" for="vid">Q1: Tell us what you've been doing most recently and why you're looking to make a change</label>
 				      	<input class="vid-btn" type="file" placeholder="please upload your video" id="video" name="video" accept="video/*" class="form-control" value="{{ request.files['video'] }}">
 					 </div>
+				</div>
+				<div id="questions_form">
 					 <div class="column">
-					 	<label class="questions" for="vid">Q2: briefly describe unsuccessful experience you learned from?</label>
+					 	<label class="questions" for="vid">Q2: How do you think twitter is changing the way we do customer service? Do you think this is a positive trend and if so, whom is it helping</label>
 				      	<input class="vid-btn" type="file" placeholder="please upload your video" id="video2" name="video2" accept="video/*" class="form-control" value="{{ request.files['video2'] }}">
 					</div>
 				</div>

@@ -23,8 +23,9 @@ def get_video_path(video,question_num):
 
 
 def create_output_files():
-	file1_header = "name,job,Question,emotion,'emotion source',value,'emotionl intelligence','English Fluency','Total rank'"
+	file1_header = "Date,mail,name,job,Question,emotion,emotion source,value,emotionl intelligence,English Fluency,Total rank"
 	#create file and write header to it
+
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
 	f.close()
@@ -37,8 +38,8 @@ def append_to_output_files(vacancy, email, name, question_num, source, emotion, 
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
 	value_str = str(value)
-	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",",
-	 				value_str, ",", str(emotional_intelligence), ",", str(fluency_score), ",", str(final_score), "\n"))
+	# file1_header = "date,name,job,Question,emotion,'emotion source',value,'emotionl intelligence','English Fluency','Total rank'"
+	record = "".join((date,",",email, ",", name, ",", vacancy, ",", question_num_str, ",", emotion, ",", source, ",",value_str,",", str(emotional_intelligence), ",", str(fluency_score), ",", str(final_score), "\n"))
 	f.write(record)
 	f.close()
 	return 1

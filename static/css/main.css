@@ -24,7 +24,7 @@ body
     
 }
 .theLabels{
-  width:30%
+  /* width:30%; */
   float:left;
   margin:5px;
   font-family: Serif;
@@ -51,10 +51,11 @@ body
 }
 
 .questions{
-  width:30%
+  /* width:30%; */
   float:left;
   font-family: serif;
   font-size: 20px;
+  font-weight: bold;
 }
 .vid-btn{
   height:30px;
