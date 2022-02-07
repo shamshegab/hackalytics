@@ -13,6 +13,6 @@ def get_emotions(text):
     emotions_result['friendly']=result['Happy']
     emotions_result['aggressive']=result['Angry']
     emotions_result['suprised']=result['Surprise']
-    emotions_result['dissapointed']=result['Sad']
-    emotions_result['hessitant']=result['Fear']
+    emotions_result['disappointed']=result['Sad']
+    emotions_result['hesitant']=result['Fear']
     return emotions_result

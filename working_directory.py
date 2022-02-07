@@ -23,7 +23,7 @@ def get_video_path(video,question_num):
 
 
 def create_output_files():
-	file1_header = "email,name,vacancy,date,question_number,source,emotion,value"
+	file1_header = "email,name,vacancy,date,question_number,source,emotion,value,emotional_intel,fluency,final_score"
 	#create file and write header to it
 	f = open(os.path.join( temp_folder_path , "candidate_analysis.csv" ), "w")
 	f.write("".join((file1_header,"\n")) )
@@ -31,13 +31,54 @@ def create_output_files():
 	return 1
 
 
-def append_to_output_files(vacancy, email, name, question_num, source, emotion, value):
+def append_to_output_files(vacancy, email, name, question_num, source, emotion, value, emotional_intelligence, fluency_score, final_score):
 	f = open(os.path.join(temp_folder_path , "candidate_analysis.csv" ), "a")
 	now = datetime.now()
 	date = now.strftime("%d/%m/%Y %H:%M:%S")
 	question_num_str = str(question_num)
 	value_str = str(value)
-	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",", value_str, "\n"))
+	record = "".join((email, ",", name, ",", vacancy, ",", date, ",", question_num_str, ",", source, ",", emotion, ",",
+	 				value_str, ",", emotional_intelligence, ",", fluency_score, ",", final_score, "\n"))
 	f.write(record)
 	f.close()
 	return 1
+
+
+def append_output(vacancy, email, name, question_num, fluency_score, audio_pred_results, video_pred_results, text_emotions):
+
+	emotion_score_mapping = {'aggressive': 0.0,
+							'rude': 0.0,
+							'disappointed': 0.3,
+							'hesitant': 0.5,
+							'suprised': 0.6,
+							'neutral': 0.7,
+							'confident': 1.0,
+							'friendly': 1.0}
+
+	emotional_intelligence = 0
+	for em, em_score in emotion_score_mapping.items():
+		if (em in audio_pred_results) and (em in video_pred_results) and (em in text_emotions):
+			normalised_emotion = (audio_pred_results[em] + video_pred_results[em] + text_emotions[em])/3
+		elif em in audio_pred_results:
+			normalised_emotion = audio_pred_results[em]/3
+		elif (em in video_pred_results) and (em in text_emotions):
+			normalised_emotion = (video_pred_results[em] + text_emotions[em])/3
+		elif em in video_pred_results:
+			normalised_emotion = video_pred_results[em]/3
+
+		emotional_intelligence = emotional_intelligence + (normalised_emotion * em_score)
+	
+	fluency_score = fluency_score/100
+	final_score = (emotional_intelligence + fluency_score)/2
+
+	for emotion, value in audio_pred_results.items():
+		append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value,
+												 emotional_intelligence, fluency_score, final_score)
+	
+	for emotion, value in video_pred_results.items():
+		append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value,
+												 emotional_intelligence, fluency_score, final_score)
+
+	for emotion, value in text_emotions.items():
+		append_to_output_files(vacancy, email, name, question_num, 'Text', emotion, value,
+												 emotional_intelligence, fluency_score, final_score)

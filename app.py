@@ -47,12 +47,10 @@ def index():
 				print(recognized_text)
 				
 				print("Begin Text analysis")
-				text_emotions= text_emotions_analysis.get_emotions(recognized_text)
+				text_emotions = text_emotions_analysis.get_emotions(recognized_text)
 
 				print("Begin Fluency analysis")
-				fluency_score = fluency_detector(os.path.join( temp_folder_path , "video_audio.mp3" ))
-				working_directory.append_to_output_files(vacancy, email, name, question_num, 'Fluency', "not applicable", fluency_score)
-
+				fluency_score = fluency_detector(os.path.join(temp_folder_path, "video_audio.mp3"))
 				print("Fluency Score: ", fluency_score)
 
 				print("Begin Audio analysis")
@@ -60,18 +58,14 @@ def index():
 				print("Audio analysis results:")
 				print(audio_pred_results)
 
-				for emotion, value in audio_pred_results.items():
-					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Audio', emotion, value)
-
-        
 				print("Begin Video analysis")
 				video_pred_results = classify_video(video_path,100)
 				print("Video analysis results:")
 				print(video_pred_results)
 				
-				for emotion, value in video_pred_results.items():
-					working_directory.append_to_output_files(vacancy, email, name, question_num, 'Video', emotion, value)
-				
+				working_directory.append_output(vacancy, email, name, question_num, fluency_score, audio_pred_results,
+												 video_pred_results, text_emotions)
+
 				question_num += 1
 				working_directory.remove_temp_video(video_path)
 
